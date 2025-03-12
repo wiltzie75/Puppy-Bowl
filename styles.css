@@ -1,5 +1,14 @@
-*{
+/* *{
   padding: 0;
   margin: 0;
   box-sizing: border-box;
+} */
+
+#playersList {
+  display: flex;
+  flex-flow: row wrap;
+  list-style: none;
+  padding: 0;
 }
+
+
