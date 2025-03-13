@@ -19,10 +19,23 @@
 
   <!-- form to add new players -->
   <div id="new-player-form"></div>
+  <form id="playerForm">
+    <h3>Add new player</h2>
+      <label for="name">Name:</label>
+      <input type="text" id="name" required>
 
+      <label for="breed">Breed:</label>
+      <input type="text" id="breed" required>
+
+      <label for="image">Image: </label>
+      <input type="text" id="image">
+
+      <button type="submit" id="submit">Submit</button>
+    </form>
   <!-- container for all players -->
   <div id="all-players-container"></div>
+    <!-- <h2>Players</h2> -->
+      <ul id="playersList"></ul>
 
 </body>
-
 </html>
