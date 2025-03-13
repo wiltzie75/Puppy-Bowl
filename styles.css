@@ -24,23 +24,6 @@ img {
   gap: 5px;
 }
 
-/* .singleHeader{
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
-  flex-direction: row;
-} */
-
-/* .single {
-  display: flex;
-  justify-content: left;
-  align-items: center;
-  width: 200px;
-  gap: 10px;
-  flex-direction: column;
-} */
-
 #singleImg {
   max-width: 50%;
   height: auto;
