@@ -29,22 +29,6 @@ const fetchAllPlayers = async () => {
     return state.players;
 };
 
-// const fetchSinglePlayer = async (playerId) => {
-//     try {
-//         const response = await fetch(`${APIURL}/players/${playerId}`);
-//         const json = await response.json();
-//         console.log(json.data);
-//         playerList.innerHTML = `
-//             <h2>${playerId.name}</h2>
-//             <p>#${playerId.id}</p>
-//             <p>Breed: ${playerId.breed}</p>
-//             <img src="${playerId.imageUrl}" alt="${playerId.name}">
-//             `;
-//     } catch (err) {
-//         console.error(`Oh no, trouble fetching player #${playerId}!`, err);
-//     }    
-// };
-
 const fetchSinglePlayer = async (playerId) => {
     try {
         const response = await fetch(`${APIURL}/players/${playerId}`);
@@ -52,11 +36,15 @@ const fetchSinglePlayer = async (playerId) => {
         const player = json.data.player;
 
         playerList.innerHTML = `
+            <div id="single-form">
             <h2>${player.name}</h2>
             <p>#${player.id}</p>
             <p>Breed: ${player.breed}</p>
-            <img src="${player.imageUrl}" alt="${player.name}">
+            <img id="singleImg" src="${player.imageUrl}" alt="${player.name}">
+            </div>
         `;
+
+        const singleForm = document.getElementById("single-form");
 
         const backToPlayers = document.createElement("button");
         backToPlayers.textContent = "Back to all players";
@@ -65,6 +53,7 @@ const fetchSinglePlayer = async (playerId) => {
             renderAllPlayers(playerList);
         });
         playerList.appendChild(backToPlayers);
+        singleForm.appendChild(backToPlayers);
 
     } catch (err) {
         console.error(`Error fetching player details for ID #${playerId}`, err);
@@ -76,12 +65,13 @@ const addNewPlayer = async (event, playerObj) => {
     
    const name = addPlayerForm.name.value;
    const breed = addPlayerForm.breed.value;
+   const image = addPlayerForm.image.value;
 
     try {
         const response = await fetch(`${APIURL}/players`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({name, breed}),
+            body: JSON.stringify({name, breed, imageUrl: image}),
           });
           const json = await response.json();
     
@@ -91,7 +81,7 @@ const addNewPlayer = async (event, playerObj) => {
     } catch (err) {
         console.error('Oops, something went wrong with adding that player!', err);
     }
-    // addPlayerForm.reset();
+    addPlayerForm.reset();
 };
 
 addPlayerForm.addEventListener("submit", addNewPlayer);
@@ -133,11 +123,41 @@ const renderAllPlayers = (playerList) => {
 
         const playerCards = state.players.map((player) => {
             const playerCard = document.createElement("li");
-            // playerCard.classList.add("player");
+            playerCard.innerHTML = `
+                <h2 class="players">${player.name}</h2>
+                <p class="players">#${player.id}</p>
+                <img src="${player.imageUrl} " alt="${player.name}">    
+            `;
+            
+            const seeDetailsButton = document.createElement("button");
+                seeDetailsButton.textContent = "See Details";
+                playerCard.append(seeDetailsButton);
+                seeDetailsButton.addEventListener("click", () => fetchSinglePlayer(player.id));
+
+            const removeButton = document.createElement("button");
+                removeButton.textContent = "Remove from roster";
+                playerCard.append(removeButton);
+                removeButton.addEventListener("click", () => removePlayer(player.id));
+
+            return playerCard;
+            
+        });
+        playerList.replaceChildren(...playerCards);
+}
+
+/**
+ * It renders a form to the DOM, and when the form is submitted, it adds a new player to the database,
+ * fetches all players from the database, and renders them to the DOM.
+ */
+const renderNewPlayerForm = () => {
+    try {
+        const playerCards = state.players.map((player) => {
+            const playerCard = document.createElement("li");
+            playerCard.classList.add("player");
             playerCard.innerHTML = `
                 <h2>${player.name}</h2>
                 <p>${player.id}</p>
-                <img src="${player.imageUrl} " alt="">    
+                <img src="${player.imageUrl}" alt"">
             `;
 
             const seeDetailsButton = document.createElement("button");
@@ -152,58 +172,9 @@ const renderAllPlayers = (playerList) => {
 
             return playerCard;
         });
-        playerList.replaceChildren(...playerCards);
-}
-
-
-
-// const singlePlayer = (playerId) => {
-//             // let playerCard = document.createElement("li");
-//             const playerCard = `
-//                     <h2>${playerId.name}</h2>
-//                     <p>${playerId.id}</p>
-//                     <p>${playerId.teamId}</p>
-//                     <p>${playerId.breed}</p>
-//                     <img src="${playerId.imageUrl}">
-//                 `;
-//             playerList.innerHTML = playerCard;
-
-//             const backToPlayers = document.createElement("button");
-//                 backToPlayers.textContent = "Back to all players";
-//                 // playerCard.append(backToPlayers);
-//                 backToPlayers.addEventListener("click", () => playerCard(playerId.id));
-
-// }
-/**
- * It renders a form to the DOM, and when the form is submitted, it adds a new player to the database,
- * fetches all players from the database, and renders them to the DOM.
- */
-const renderNewPlayerForm = () => {
-    try {
-        const playerCards = state.players.map((player) => {
-            const playerCard = document.createElement("li");
-            playerCard.classList.add("player");
-            playerCard.innerHTML = `
-                <h2>${player.name}</h2>
-                <p>#${player.id}</p>
-            `;
-            const seeDetailsButton = document.createElement("button");
-                seeDetailsButton.textContent = "See Details";
-                playerCard.append(seeDetailsButton);
-                seeDetailsButton.addEventListener("click", () => fetchSinglePlayer(player.id));
-
-            const removeButton = document.createElement("button");
-                removeButton.textContent = "Remove from roster";
-                playerCard.append(removeButton);
-                removeButton.addEventListener("click", () => removePlayer(player.id));
-
-            return playerCard;
-        }
-    );
     } catch (err) {
         console.error('Uh oh, trouble rendering the new player form!', err);
     }
-    // playerList.replaceChildren(...playerCards);
 };
 
 const init = async () => {
